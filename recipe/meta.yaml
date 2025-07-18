@@ -32,7 +32,9 @@ requirements:
     - pydantic >=2.0.0
     # ModuleNotFoundError: No module named 'pytensor'
     # https://github.com/pymc-devs/pymc-extras/blob/main/pymc_extras/gp/latent_approx.py#L18
-    - pytensor
+    # ModuleNotFoundError: No module named 'pytensor.tensor.optimize'
+    # pytensor.tensor.optimize added from version 2.31.6
+    - pytensor >=2.31.6
   run_constrained:
     # complete, dask_histogram
     - dask <2025.1.1
