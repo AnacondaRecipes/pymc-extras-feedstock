@@ -1,47 +1,69 @@
 {% set name = "pymc-extras" %}
 {% set version = "0.3.1" %}
-{% set python_min = "3.11" %}
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
 source:
-  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/pymc_extras-{{ version }}.tar.gz
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name.replace('-', '_')}}-{{ version }}.tar.gz
   sha256: d1c93f81b9439d202a751946363951b8e643b3ec27644fb46ef43807d7c26715
 
 build:
-  noarch: python
-  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
   number: 0
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  skip: True  # [py<311]
 
 requirements:
   host:
-    - python {{ python_min }}
+    - python
     - hatchling
     - hatch-vcs
     - pip
   run:
-    - python >={{ python_min }}
-    - pymc >=5.21.1
+    - python
+    # ImportError: cannot import name 'CustomProgress' from 'pymc.util'
+    # https://github.com/pymc-devs/pymc/blob/v5.23.0/pymc/util.py#L578
+    # CustomProgress avaliable in version <5.24.0
+    - pymc >=5.21.1,<5.24.0
     - scikit-learn
     - better-optimize >=0.1.4
     - pydantic >=2.0.0
+    # ModuleNotFoundError: No module named 'pytensor'
+    # https://github.com/pymc-devs/pymc-extras/blob/main/pymc_extras/gp/latent_approx.py#L18
+    - pytensor
+  run_constrained:
+    # complete, dask_histogram
+    - dask <2025.1.1
 
 test:
+  source_files:
+    - tests
   imports:
     - pymc_extras
   commands:
     - pip check
+    # Tests passed locally, but tests need more than 30 minutes each Python iteration. Skipped.
+    #- pytest -v tests
   requires:
-    - python {{ python_min }}
     - pip
+    - pytest >=6.0
+    - pytest-mock
+    - preliz >=0.5.0
+    - statsmodels
 
 about:
   home: https://github.com/pymc-devs/pymc-extras
   summary: A home for new additions to PyMC, which may include unusual probability distribitions, advanced model fitting algorithms, or any code that may be inappropriate to include in the pymc repository, but may want to be made available to users.
   license: Apache-2.0
+  license_family: Apache
   license_file: LICENSE
+  description: |
+    As PyMC continues to mature and expand its functionality to accommodate
+    more domains of application, we increasingly see cutting-edge methodologies,
+    highly specialized statistical distributions,and complex models appear.
+  doc_url: https://www.pymc.io/projects/extras
+  dev_url: https://github.com/pymc-devs/pymc-extras
 
 extra:
   recipe-maintainers:
