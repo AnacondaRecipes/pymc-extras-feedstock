@@ -12,7 +12,8 @@ source:
 build:
   number: 0
   script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
-  skip: True  # [py<311]
+  # pymc 5.23 is available only for py 311 and 312
+  skip: True  # [py<311 or py>312]
 
 requirements:
   host:
