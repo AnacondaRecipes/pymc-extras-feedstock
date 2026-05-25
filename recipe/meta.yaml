@@ -27,7 +27,8 @@ requirements:
     - better-optimize >=0.1.5
     - pydantic >=2.0.0
     - pytensor >=2.38.1
-    - preliz >=0.20.0
+    # preliz is not available on the main channel.
+    #- preliz >=0.20.0
   run_constrained:
     # complete, dask_histogram
     - dask <2025.1.1
