@@ -12,8 +12,7 @@ source:
 build:
   number: 0
   script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
-  # pymc 5.23 is available only for py 311 and 312
-  skip: true  # [py<311 or py>312]
+  skip: true  # [py<311]
 
 requirements:
   host:
@@ -23,17 +22,10 @@ requirements:
     - pip
   run:
     - python
-    # ImportError: cannot import name 'CustomProgress' from 'pymc.util'
-    # https://github.com/pymc-devs/pymc/blob/v5.23.0/pymc/util.py#L578
-    # CustomProgress avaliable in version <5.24.0
     - pymc >=5.28.1
     - scikit-learn
     - better-optimize >=0.1.5
     - pydantic >=2.0.0
-    # ModuleNotFoundError: No module named 'pytensor'
-    # https://github.com/pymc-devs/pymc-extras/blob/main/pymc_extras/gp/latent_approx.py#L18
-    # ModuleNotFoundError: No module named 'pytensor.tensor.optimize'
-    # pytensor.tensor.optimize added from version 2.31.6
     - pytensor >=2.38.1
     - preliz >=0.20.0
   run_constrained:
