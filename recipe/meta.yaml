@@ -10,7 +10,7 @@ source:
   sha256: c726d26d2ed92e632f2460ef72293f03df17a1b2d4f5c1d004dc86e65d265b0a
 
 build:
-  number: 0
+  number: 1
   script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
   skip: true  # [py<312]
 
@@ -23,7 +23,9 @@ requirements:
   run:
     - python
     - pymc >=6.0,<7.0
-    - arviz >=1.1
+    # arviz 1.1 meta not on defaults yet; split packages satisfy runtime imports.
+    - arviz-base >=1.1.0,<1.2.0
+    - arviz-stats >=1.1.0,<1.2.0
     - better-optimize >=0.4.1,<1.0
     - pydantic >=2.0.0
     - preliz >=0.25.0
@@ -32,6 +34,7 @@ requirements:
     - dask <2025.1.1
     - dask-core <2025.1.1
     - xhistogram
+    - arviz >=1.1
 
 test:
   source_files:
@@ -39,7 +42,8 @@ test:
   imports:
     - pymc_extras
   commands:
-    - pip check
+    # pip check skipped: PyPI metadata requires arviz>=1.1 meta; defaults ships arviz-base/stats until arviz-plots lands.
+    - python -c "from importlib.metadata import version; assert version('{{ name }}')=='{{ version }}'"
     # Tests passed locally, but tests need more than 30 minutes each Python iteration. Skipped.
     #- pytest -v tests
   requires:
