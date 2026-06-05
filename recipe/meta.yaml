@@ -1,5 +1,5 @@
 {% set name = "pymc-extras" %}
-{% set version = "0.11.0" %}
+{% set version = "0.12.0" %}
 
 package:
   name: {{ name|lower }}
@@ -7,10 +7,10 @@ package:
 
 source:
   url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name.replace('-', '_')}}-{{ version }}.tar.gz
-  sha256: c726d26d2ed92e632f2460ef72293f03df17a1b2d4f5c1d004dc86e65d265b0a
+  sha256: 2288a17cd2b32a42de00ab4511e4d211cf1808ed3afa1ee745f5aecd422d47af
 
 build:
-  number: 1
+  number: 0
   script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
   skip: true  # [py<312]
 
@@ -23,10 +23,8 @@ requirements:
   run:
     - python
     - pymc >=6.0,<7.0
-    # arviz 1.1 meta not on defaults yet; split packages satisfy runtime imports.
-    - arviz-base >=1.1.0,<1.2.0
-    - arviz-stats >=1.1.0,<1.2.0
-    - better-optimize >=0.4.1,<1.0
+    - arviz >=1.1.0
+    - better-optimize >=0.4.2,<1.0
     - pydantic >=2.0.0
     - preliz >=0.25.0
   run_constrained:
@@ -34,7 +32,6 @@ requirements:
     - dask <2025.1.1
     - dask-core <2025.1.1
     - xhistogram
-    - arviz >=1.1
 
 test:
   source_files:
@@ -42,7 +39,7 @@ test:
   imports:
     - pymc_extras
   commands:
-    # pip check skipped: PyPI metadata requires arviz>=1.1 meta; defaults ships arviz-base/stats until arviz-plots lands.
+    - pip check
     - python -c "from importlib.metadata import version; assert version('{{ name }}')=='{{ version }}'"
     # Tests passed locally, but tests need more than 30 minutes each Python iteration. Skipped.
     #- pytest -v tests
