@@ -1,5 +1,5 @@
 {% set name = "pymc-extras" %}
-{% set version = "0.3.1" %}
+{% set version = "0.12.0" %}
 
 package:
   name: {{ name|lower }}
@@ -7,13 +7,12 @@ package:
 
 source:
   url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name.replace('-', '_')}}-{{ version }}.tar.gz
-  sha256: d1c93f81b9439d202a751946363951b8e643b3ec27644fb46ef43807d7c26715
+  sha256: 2288a17cd2b32a42de00ab4511e4d211cf1808ed3afa1ee745f5aecd422d47af
 
 build:
   number: 0
   script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
-  # pymc 5.23 is available only for py 311 and 312
-  skip: True  # [py<311 or py>312]
+  skip: true  # [py<312]
 
 requirements:
   host:
@@ -23,21 +22,15 @@ requirements:
     - pip
   run:
     - python
-    # ImportError: cannot import name 'CustomProgress' from 'pymc.util'
-    # https://github.com/pymc-devs/pymc/blob/v5.23.0/pymc/util.py#L578
-    # CustomProgress avaliable in version <5.24.0
-    - pymc >=5.21.1,<5.24.0
-    - scikit-learn
-    - better-optimize >=0.1.4
+    - pymc >=6.0,<7.0
+    - arviz >=1.1.0
+    - better-optimize >=0.4.2,<1.0
     - pydantic >=2.0.0
-    # ModuleNotFoundError: No module named 'pytensor'
-    # https://github.com/pymc-devs/pymc-extras/blob/main/pymc_extras/gp/latent_approx.py#L18
-    # ModuleNotFoundError: No module named 'pytensor.tensor.optimize'
-    # pytensor.tensor.optimize added from version 2.31.6
-    - pytensor >=2.31.6
+    - preliz >=0.25.0
   run_constrained:
-    # complete, dask_histogram
+    # complete, dask_histogram optional extras
     - dask <2025.1.1
+    - dask-core <2025.1.1
 
 test:
   source_files:
@@ -46,6 +39,7 @@ test:
     - pymc_extras
   commands:
     - pip check
+    - python -c "from importlib.metadata import version; assert version('{{ name }}')=='{{ version }}'"
     # Tests passed locally, but tests need more than 30 minutes each Python iteration. Skipped.
     #- pytest -v tests
   requires:
